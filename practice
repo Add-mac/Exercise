@@ -1,0 +1,70 @@
+
+using Random, DataFrames, CSV, Distributions, LinearAlgebra, Statistics, Plots, PlotlyBase
+plotly()
+
+
+# Distributions
+# univariate distribution 
+
+birth_weight = rand(Normal(30,1))
+growth_rate = rand(Normal(0.8,0.01))
+calf_price = rand(Normal(250,1))
+
+
+# for 100 sample 
+birth_weight1 = rand(Normal(30,1), 100)
+growth_rate1 = rand(Normal(0.8,0.01), 100)
+calf_price1 = rand(Normal(250,1), 100)
+
+#uncorrelated multivariant
+
+adg, weight,price=rand(MvNormal([ birth_weight, growth_rate, calf_price]))
+# for 100 sample
+adg, weight,price=rand(MvNormal([ birth_weight, growth_rate, calf_price]), 100)
+
+
+#correlated multivariant
+cov = [0.0000001 0.00044 0.00068; 0.00044 2 3; 0.00068 3 5]
+adg, weight,price=rand(MvNormal([ birth_weight, growth_rate, calf_price],cov))
+# for 100 sample
+b = adg, weight,price = rand(MvNormal([ birth_weight, growth_rate, calf_price],cov), 1000)
+
+a = rand(Normal(10,1), 100)
+
+
+Plots.histogram(a)
+Plots.histogram(b)
+
+#Richard animal growth equation
+zt = []
+function heifer_HF(days)
+    birth_weight = 30
+    adg = 0.05
+    growthcurve = 4.1
+    for i in 1:days
+weight = (700*(1-(0.5355*exp(-adg*i)))^growthcurve)
+push!(zt, weight)
+i +=1
+    end 
+end 
+heifer_HF(900)
+plot(zt)
+
+
+zt = []
+function heifer_HF(days)
+    birth_weight = 30
+    adg = 0.5
+    c = .8
+    ts = 1
+    growthcurve = 0.9
+    for i in 1:days
+weight = (700*(1 - exp(-adg*((i/365) - growthcurve)-(c*adg/2π)*sin(2π*((i/365) - ts)) + (c*adg/2π)*sin(2π*(growthcurve - ts)))))
+push!(zt, weight)
+i +=1
+    end 
+end 
+heifer_HF(900)
+plot(zt)
+
+       
